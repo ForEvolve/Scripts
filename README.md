@@ -71,3 +71,31 @@ To tell the script not to build the solution, you can specify `-noBuild` or `-no
 ```powershell
 Add-DualProjects -p SomeCoolProject -t mvc -s some-solution.sln -mkdir $false -no-build -create-sln
 ```
+
+## Other info
+
+Use a custom MyGet feed:
+
+```
+Import-Module PowerShellGet
+$PSGalleryPublishUri = 'https://www.myget.org/F/forevolve/api/v2/package'
+$PSGallerySourceUri = 'https://www.myget.org/F/forevolve/api/v2'
+Register-PSRepository -Name MyGetFeed -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri
+```
+
+Install the module from that custom MyGet feed:
+
+```
+Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository MyGetFeed -Scope CurrentUser
+```
+
+Publish to that custom MyGet feed:
+
+```
+$APIKey = 'YOUR-API-KEY'
+Publish-Module -Path dotnet-new -NuGetApiKey $APIKey -Repository MyGetFeed -Verbose
+```
+
+Read feeds list: `Get-PSRepository`
+
+Create a module manifest: `New-ModuleManifest -Path dual-projects.psd1`

@@ -140,3 +140,5 @@ function ReferenceSourceFromTest {
     Write-Verbose "Adding reference to test project using command: dotnet add $testProjectPath reference $srcProjectPath"
     dotnet add $testProjectPath reference $srcProjectPath
 }
+
+Export-ModuleMember -Function Add-DualProjects
