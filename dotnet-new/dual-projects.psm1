@@ -82,7 +82,8 @@ function Add-DualProjects {
         [string]$projectTemplate = "web",
         [switch]$createSolution = $false,
         [string]$solutionName = $null,
-        [bool]$mkdir = $true
+        [bool]$mkdir = $true,
+        [switch]$noBuild
     )
     
     Write-Debug "projectName: $projectName"
@@ -107,18 +108,18 @@ function Add-DualProjects {
     ReferenceSourceFromTest $srcProjectPath $testProjectPath
 
     # Execute post-creation actions
-    ExecutePostCreationActions $solutionName
+    if (!$noBuild) {
+        BuildSolution $solutionName
+    }
 }
 
-function ExecutePostCreationActions($solutionName) {
+function BuildSolution($solutionName) {
     if ($solutionName) {
-        Write-Verbose "Restoring solution using command: dotnet restore $solutionName"
-        #dotnet restore $solutionName
+        Write-Verbose "Building solution using command: dotnet restore $solutionName"
         dotnet build $solutionName
     }
     else {
-        Write-Verbose "Restoring solution using command: dotnet restore"
-        #dotnet restore
+        Write-Verbose "Building solution using command: dotnet restore"
         dotnet build
     }
 }

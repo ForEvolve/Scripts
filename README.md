@@ -17,44 +17,40 @@ test
 (optional){solution name}.sln
 ```
 
-## How to install
+### How to install
 
 ```
 Import-Module .\dotnet-new\dual-projects.psm1
 ```
 
-## How to use
+### How to use
 
-How to create a project and a test project (named booyaba) in an existing solution:
+How to create a project and a test project (named `SomeCoolProject`) in an existing solution:
 
 ```powershell
-./dotnet-new/dual-projects.ps1 -projectName booyaba -nosln
+Add-DualProjects -projectName SomeCoolProject
 ```
 
-How to create a project, a test project (named booyaba) and a solution:
+How to create a project, a test project (named `SomeCoolProject`) and a solution:
 
 ```powershell
-./dotnet-new/dual-projects.ps1 -projectName booyaba
+Add-DualProjects -projectName SomeCoolProject -createSolution
 ```
 
-How to create a class library project and a test project (named booyaba) in an existing solution:
+How to create a class library project and a test project (named `SomeCoolProject`) in an existing solution:
 
 ```powershell
-./dotnet-new/dual-projects.ps1 -projectName booyaba -nosln -classlib
-OR
-./dotnet-new/dual-projects.ps1 -projectName booyaba -nosln -projectTemplate classlib
+Add-DualProjects -projectName SomeCoolProject -projectTemplate classlib
 ```
 
-How to create a class library project, a test project (named booyaba) and a solution:
+How to create a class library project, a test project (named `SomeCoolProject`) and a solution:
 
 ```powershell
-./dotnet-new/dual-projects.ps1 -projectName booyaba -classlib
-OR
-./dotnet-new/dual-projects.ps1 -projectName booyaba -projectTemplate classlib
+Add-DualProjects -projectName SomeCoolProject -projectTemplate classlib -createSolution
 ```
 
-How to create an MVC project and a test project (named booyaba) in an new solution named some-solution.sln in the current directory:
+How to create an MVC project and a test project (named `SomeCoolProject`) in an new solution named some-solution.sln in the current directory:
 
 ```powershell
-./dotnet-new/dual-projects.ps1 -projectName booyaba -projectTemplate mvc -solutionName some-solution.sln
+Add-DualProjects -projectName SomeCoolProject -projectTemplate mvc -createSolution -solutionName some-solution.sln -mkdir $false
 ```
