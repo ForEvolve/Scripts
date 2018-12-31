@@ -17,7 +17,13 @@ test
 (optional){solution name}.sln
 ```
 
-### Examples
+## How to install
+
+```
+Import-Module .\dotnet-new\dual-projects.psm1
+```
+
+## How to use
 
 How to create a project and a test project (named booyaba) in an existing solution:
 

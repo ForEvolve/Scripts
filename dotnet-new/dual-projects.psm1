@@ -1,7 +1,6 @@
 ﻿function Add-Solution {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true)]
         [string] $solutionName,
         [bool] $mkdir = $false,
         [string] $projectName = $null
@@ -39,70 +38,103 @@
     }
 }
 
-function Main-ASDF {
-    [CmdletBinding(PositionalBinding = $false)]
+function Add-Project {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)][string] $projectDirectory,
+        [Parameter(Mandatory = $true)][string] $projectName,
+        [Parameter(Mandatory = $true)][string] $projectTemplate,
+        [string]$solutionName = $null
+    )
+    Write-Debug "projectDirectory: $projectDirectory"
+    Write-Debug "projectName: $projectName"
+    Write-Debug "projectTemplate: $projectTemplate"
+
+    # Create the src/test dir if they don't exist
+    if (!(Test-Path $projectDirectory)) {
+        Write-Verbose "Creating $projectDirectory diretory using command: mkdir $projectDirectory"
+        mkdir $projectDirectory
+    }
+
+    # Create the project
+    Set-Location $projectDirectory
+    Write-Verbose "Creating project using command: dotnet new $projectTemplate -n $projectName"
+    dotnet new $projectTemplate -n $projectName --no-restore
+    Set-Location ..
+        
+    # Add the project to the solution
+    $projectPath = GetProjectPath $projectDirectory $projectName
+    Write-Debug "projectPath: $projectPath"
+    if ($solutionName) {
+        Write-Verbose "Adding project to solution using command: dotnet sln $solutionName add $projectPath"
+        dotnet sln $solutionName add $projectPath
+    }
+    else {
+        Write-Verbose "Adding project to solution using command: dotnet sln add $projectPath"
+        dotnet sln add $projectPath
+    }
+}
+
+function Add-DualProjects {
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)][string]$projectName,
         [string]$projectTemplate = "web",
-        [switch]$classlib = $false,
         [switch]$createSolution = $false,
         [string]$solutionName = $null,
         [bool]$mkdir = $true
     )
-    $debugColor = "magenta"
     
-    if ($debug) {
-        Write-Host "solutionName: $solutionName" -foregroundcolor $debugColor
-    }
+    Write-Debug "projectName: $projectName"
+    Write-Debug "projectTemplate: $projectTemplate"
+    Write-Debug "createSolution: $createSolution"
+    Write-Debug "solutionName: $solutionName"
+    Write-Debug "mkdir: $mkdir"
     
     if ($createSolution) {
         Add-Solution $solutionName $mkdir $projectName
     }
     
-    # Create project paths
-    $SrcProjectDir = "src\$projectName"
-    $TestProjectDir = "test\$projectName.Tests"
+    # Create the project
+    Add-Project src $projectName $projectTemplate $solutionName
     
-    $SrcProjectName = "$projectName"
-    $TestProjectName = "$projectName.Tests"
-    
-    $SrcProjectPath = "$SrcProjectDir\$projectName.csproj"
-    $TestProjectPath = "$TestProjectDir\$projectName.Tests.csproj"
-    
-    # Create project
-    if (!(Test-Path src)) {
-        if ($debug) { Write-Host "Creating src diretory using command: mkdir src" -foregroundcolor $debugColor }
-        mkdir src
-    }
-    Set-Location src
-    if ($classlib -and $projectTemplate -eq "web") {
-        $projectTemplate = "classlib";
-    }
-    if ($debug) { Write-Host "Creating project using command: dotnet new $projectTemplate -n $SrcProjectName" -foregroundcolor $debugColor }
-    dotnet new $projectTemplate -n $SrcProjectName
-    Set-Location ..
-    
-    # Create test project
-    if (!(Test-Path test)) {
-        if ($debug) { Write-Host "Creating test diretory using command: mkdir test" -foregroundcolor $debugColor }
-        mkdir test
-    }
-    Set-Location test
-    if ($debug) { Write-Host "Creating test project using command: dotnet new xunit -n $TestProjectName" -foregroundcolor $debugColor }
-    dotnet new xunit -n $TestProjectName
-    Set-Location ..
+    # Create the test project
+    Add-Project test "$projectName.Tests" xunit $solutionName
     
     # Add Reference to test project
-    if ($debug) { Write-Host "Adding reference from src to test project using command: dotnet add $TestProjectPath reference $SrcProjectPath" -foregroundcolor $debugColor }
-    dotnet add $TestProjectPath reference $SrcProjectPath
-    
-    # Add projects to solution
-    if ($solutionName -eq $null) {
-        if ($debug) { Write-Host "Adding projects to solution using command: dotnet sln add $SrcProjectPath $TestProjectPath" -foregroundcolor $debugColor }
-        dotnet sln add $SrcProjectPath $TestProjectPath
+    $srcProjectPath = GetProjectPath src $projectName
+    $testProjectPath = GetProjectPath test "$projectName.Tests"
+    ReferenceSourceFromTest $srcProjectPath $testProjectPath
+
+    # Execute post-creation actions
+    ExecutePostCreationActions $solutionName
+}
+
+function ExecutePostCreationActions($solutionName) {
+    if ($solutionName) {
+        Write-Verbose "Restoring solution using command: dotnet restore $solutionName"
+        #dotnet restore $solutionName
+        dotnet build $solutionName
     }
     else {
-        if ($debug) { Write-Host "Adding projects to solution using command: dotnet sln $solutionName add $SrcProjectPath $TestProjectPath" -foregroundcolor $debugColor }
-        dotnet sln $solutionName add $SrcProjectPath $TestProjectPath
+        Write-Verbose "Restoring solution using command: dotnet restore"
+        #dotnet restore
+        dotnet build
     }
+}
+
+function GetProjectPath($projectDirectory, $projectName) {
+    return "$projectDirectory\$projectName\$projectName.csproj";
+}
+
+function ReferenceSourceFromTest {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)][string]$srcProjectPath,
+        [Parameter(Mandatory = $true)][string]$testProjectPath
+    )
+    Write-Debug "srcProjectPath: $srcProjectPath"
+    Write-Debug "testProjectPath: $testProjectPath"
+    Write-Verbose "Adding reference to test project using command: dotnet add $testProjectPath reference $srcProjectPath"
+    dotnet add $testProjectPath reference $srcProjectPath
 }
