@@ -78,12 +78,12 @@ function Add-Project {
 function Add-DualProjects {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true)][string]$projectName,
-        [string]$projectTemplate = "web",
-        [switch]$createSolution = $false,
-        [string]$solutionName = $null,
+        [Parameter(Mandatory = $true)][Alias("p")][string]$projectName,
+        [Alias("t")][string]$projectTemplate = "web",
+        [Alias("create-sln")][switch]$createSolution = $false,
+        [Alias("s")][string]$solutionName = $null,
         [bool]$mkdir = $true,
-        [switch]$noBuild
+        [Alias("no-build")][switch]$noBuild
     )
     
     Write-Debug "projectName: $projectName"
@@ -91,6 +91,7 @@ function Add-DualProjects {
     Write-Debug "createSolution: $createSolution"
     Write-Debug "solutionName: $solutionName"
     Write-Debug "mkdir: $mkdir"
+    Write-Debug "noBuild: $noBuild"
     
     if ($createSolution) {
         Add-Solution $solutionName $mkdir $projectName
