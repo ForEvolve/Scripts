@@ -17,10 +17,45 @@ test
 (optional){solution name}.sln
 ```
 
-### How to install
+### How to install from source code
+From the source code directory, execute the following command:
 
 ```
 Import-Module .\dotnet-new\dual-projects.psm1
+```
+
+### How to install from MyGet
+You can also use my published version, on MyGet, by executing the following commands:
+
+Register my NuGet feed as `ForEvolveFeed`:
+
+```
+Import-Module PowerShellGet
+$PSGalleryPublishUri = 'https://www.myget.org/F/forevolve/api/v2/package'
+$PSGallerySourceUri = 'https://www.myget.org/F/forevolve/api/v2'
+Register-PSRepository -Name ForEvolveFeed -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri
+```
+
+Install the module from that custom MyGet feed:
+
+```
+# for all users/as admin
+Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository ForEvolveFeed
+
+# only for the current user
+Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository ForEvolveFeed -Scope CurrentUser
+```
+
+Finally, import the module:
+
+```
+Import-Module .\dotnet-new\dual-projects.psm1
+```
+
+You may need update your execution policy, with `Set-ExecutionPolicy`, to be able to run PowerShell script file using the following command:
+
+```
+Set-ExecutionPolicy Unrestricted
 ```
 
 ### Parameters
@@ -72,28 +107,13 @@ To tell the script not to build the solution, you can specify `-noBuild` or `-no
 Add-DualProjects -p SomeCoolProject -t mvc -s some-solution.sln -mkdir $false -no-build -create-sln
 ```
 
-## Other info
-
-Use a custom MyGet feed:
-
-```
-Import-Module PowerShellGet
-$PSGalleryPublishUri = 'https://www.myget.org/F/forevolve/api/v2/package'
-$PSGallerySourceUri = 'https://www.myget.org/F/forevolve/api/v2'
-Register-PSRepository -Name MyGetFeed -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri
-```
-
-Install the module from that custom MyGet feed:
-
-```
-Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository MyGetFeed -Scope CurrentUser
-```
+## Other info (notes to self)
 
 Publish to that custom MyGet feed:
 
 ```
 $APIKey = 'YOUR-API-KEY'
-Publish-Module -Path dotnet-new -NuGetApiKey $APIKey -Repository MyGetFeed -Verbose
+Publish-Module -Path dotnet-new -NuGetApiKey $APIKey -Repository ForEvolveFeed -Verbose
 ```
 
 Read feeds list: `Get-PSRepository`
