@@ -49,7 +49,7 @@ Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository ForEvo
 Finally, import the module:
 
 ```
-Import-Module .\dotnet-new\dual-projects.psm1
+Import-Module dual-projects.psm1
 ```
 
 You may need update your execution policy, with `Set-ExecutionPolicy`, to be able to run PowerShell script file using the following command:
@@ -57,6 +57,8 @@ You may need update your execution policy, with `Set-ExecutionPolicy`, to be abl
 ```
 Set-ExecutionPolicy Unrestricted
 ```
+
+*You need to run PowerShell in admin mode to execute that command.*
 
 ### Parameters
 
