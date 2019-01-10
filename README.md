@@ -4,7 +4,7 @@ Some useful scripts.
 
 ## dotnet-new/dual-projects.ps1
 
-Allows you to create a project of any type (possible with `dotnet new`) and its associated test project (using `xunit`).
+Allows you to create a project, using any template available with `dotnet new`, and it associated xunit test project.
 
 The project structure is as follow:
 
