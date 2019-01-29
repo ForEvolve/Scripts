@@ -67,7 +67,7 @@ Set-ExecutionPolicy Unrestricted
 | `-projectName`     | `-p`          | No      | Yes      |               | The name of the project that you want to create, for exmaple: `SomeCoolProject`. |
 | `-projectTemplate` | `-t`          | No      | No       | `web`         | The `dotnet new` template to use for the main project.                           |
 | `-createSolution`  | `-create-sln` | Yes     | No       | `$false`      | Specify if you want to create a solution.                                        |
-| `-solutionName`    | `-s`          | No      | No       |               | The name of the solution to create if it differs from the project name.          |
+| `-solutionName`    | `-s`          | No      | No       |               | The name of the solution to create if it differs from the project name. You must include the `.sln` extension; example: `My.sln`.         |
 | `-mkdir`           |               | No      | No       | `$true`       | Specify if you want to make a new directoy for the solution.                     |
 | `-noBuild`         | `-no-build`   | Yes     | No       |               | If specified, `dotnet build` will not be run after the projects creation.        |
 
