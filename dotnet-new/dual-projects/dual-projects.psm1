@@ -134,26 +134,8 @@ function Add-FunctionalTests {
     ReferenceSourceFromTest $srcProjectPath $testProjectPath
 
     # Include FunctionalTests.Build.props to project (if it exists)
-    $functionalTestsBuildPropsFile = "test\FunctionalTests.Build.props"
-    if (Test-Path $functionalTestsBuildPropsFile) {
-        Write-Verbose "Adding '$functionalTestsBuildPropsFile' to '$testProjectPath'."
-        $tmpFile = "$testProjectPath.tmp"        
-        $i = 0;
-        foreach ($line in [System.IO.File]::ReadLines($testProjectPath)) {
-            if ($i -eq 1) {
-                Add-Content -Path $tmpFile -Value "  <Import Project=""..\FunctionalTests.Build.props"" />"
-            }
-            Add-Content -Path $tmpFile -Value $line
-            $i = $i + 1
-        }
-        # Delete csproj
-        Write-Verbose "Deleting '$testProjectPath'."
-        Remove-Item –path $testProjectPath
-
-        # Rename .tmp -> .csproj
-        Write-Verbose "Renaming '$tmpFile' to '$testProjectPath'."
-        Move-Item -Path $tmpFile -Destination $testProjectPath
-    }
+    $customPropsFile = "test\FunctionalTests.Build.props"
+    UpdateRootNamespace $projectName $testProjectPath $customPropsFile
     
     # Execute post-creation actions
     if (!$noBuild) {
@@ -161,7 +143,35 @@ function Add-FunctionalTests {
     }
 }
 
+function UpdateRootNamespace($projectName, $testProjectPath, $customPropsFile = $null) {
+    $i = 0;
+    $tmpFile = "$testProjectPath.tmp"        
+    foreach ($line in [System.IO.File]::ReadLines($testProjectPath)) {
+        if ($i -eq 1) {
+            if ($customPropsFile -and (Test-Path $customPropsFile)) {
+                Write-Verbose "Adding '$customPropsFile' to '$testProjectPath'."
+                Add-Content -Path $tmpFile -Value "  <Import Project=""..\FunctionalTests.Build.props"" />"
+                Add-Content -Path $tmpFile -Value ""
+            }
 
+            # Set the RootNamespace
+            Write-Verbose "Setting RootNamespace to '$projectName'."
+            Add-Content -Path $tmpFile -Value "  <PropertyGroup>"
+            Add-Content -Path $tmpFile -Value "    <RootNamespace>$projectName</RootNamespace>"
+            Add-Content -Path $tmpFile -Value "  </PropertyGroup>"
+        }
+        Add-Content -Path $tmpFile -Value $line
+        $i = $i + 1
+    }
+
+    # Delete original csproj
+    Write-Verbose "Deleting '$testProjectPath'."
+    Remove-Item –path $testProjectPath
+
+    # Rename .csproj.tmp to .csproj
+    Write-Verbose "Renaming '$tmpFile' to '$testProjectPath'."
+    Move-Item -Path $tmpFile -Destination $testProjectPath
+}
 function BuildSolution($solutionName) {
     if ($solutionName) {
         Write-Verbose "Building solution using command: dotnet restore $solutionName"
