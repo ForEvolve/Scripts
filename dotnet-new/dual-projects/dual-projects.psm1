@@ -119,7 +119,8 @@ function Add-FunctionalTests {
     param (
         [Parameter(Mandatory = $true)][Alias("p")][string]$projectName,
         [Alias("s")][string]$solutionName = $null,
-        [Alias("no-build")][switch]$noBuild
+        [Alias("no-build")][switch]$noBuild,
+        [Alias("props")][string]$customPropsFile = "..\FunctionalTests.Build.props"
     )
     Write-Debug "projectName: $projectName"
     Write-Debug "solutionName: $solutionName"
@@ -134,7 +135,6 @@ function Add-FunctionalTests {
     ReferenceSourceFromTest $srcProjectPath $testProjectPath
 
     # Include FunctionalTests.Build.props to project (if it exists)
-    $customPropsFile = "test\FunctionalTests.Build.props"
     UpdateRootNamespace $projectName $testProjectPath $customPropsFile
     
     # Execute post-creation actions
@@ -148,9 +148,10 @@ function UpdateRootNamespace($projectName, $testProjectPath, $customPropsFile = 
     $tmpFile = "$testProjectPath.tmp"        
     foreach ($line in [System.IO.File]::ReadLines($testProjectPath)) {
         if ($i -eq 1) {
-            if ($customPropsFile -and (Test-Path $customPropsFile)) {
+            if ($customPropsFile) {
+                # -and (Test-Path $customPropsFile)) {
                 Write-Verbose "Adding '$customPropsFile' to '$testProjectPath'."
-                Add-Content -Path $tmpFile -Value "  <Import Project=""..\FunctionalTests.Build.props"" />"
+                Add-Content -Path $tmpFile -Value "  <Import Project=""$customPropsFile"" />"
                 Add-Content -Path $tmpFile -Value ""
             }
 
