@@ -83,7 +83,10 @@ function Add-DualProjects {
         [Alias("create-sln")][switch]$createSolution = $false,
         [Alias("s")][string]$solutionName = $null,
         [bool]$mkdir = $true,
-        [Alias("no-build")][switch]$noBuild
+        [Alias("no-build")][switch]$noBuild,
+        [Alias("add-functional-tests")][switch]$addFunctionalTests,
+        [Alias("tests-props")][string]$customTestsPropsFile = $null,
+        [Alias("functional-tests-props")][string]$customFunctionalTestsPropsFile = $null
     )
     
     Write-Debug "projectName: $projectName"
@@ -92,6 +95,7 @@ function Add-DualProjects {
     Write-Debug "solutionName: $solutionName"
     Write-Debug "mkdir: $mkdir"
     Write-Debug "noBuild: $noBuild"
+    Write-Debug "addFunctionalTests: $addFunctionalTests"
     
     if ($createSolution) {
         Add-Solution $solutionName $mkdir $projectName
@@ -108,6 +112,14 @@ function Add-DualProjects {
     $testProjectPath = GetProjectPath test "$projectName.Tests"
     ReferenceSourceFromTest $srcProjectPath $testProjectPath
 
+    # Update the RootNamespace to the test project
+    UpdateRootNamespace $projectName $testProjectPath
+
+    # Create a functional test project
+    if ($addFunctionalTests) {
+        Add-FunctionalTests $projectName $solutionName -no-build
+    }
+
     # Execute post-creation actions
     if (!$noBuild) {
         BuildSolution $solutionName
@@ -120,7 +132,7 @@ function Add-FunctionalTests {
         [Parameter(Mandatory = $true)][Alias("p")][string]$projectName,
         [Alias("s")][string]$solutionName = $null,
         [Alias("no-build")][switch]$noBuild,
-        [Alias("props")][string]$customPropsFile = "..\FunctionalTests.Build.props"
+        [Alias("props")][string]$customPropsFile = $null #"..\FunctionalTests.Build.props"
     )
     Write-Debug "projectName: $projectName"
     Write-Debug "solutionName: $solutionName"
@@ -134,7 +146,11 @@ function Add-FunctionalTests {
     $testProjectPath = GetProjectPath test "$projectName.FunctionalTests"
     ReferenceSourceFromTest $srcProjectPath $testProjectPath
 
-    # Include FunctionalTests.Build.props to project (if it exists)
+    # Add Microsoft.AspNetCore.Mvc.Testing
+    dotnet add $testProjectPath package Microsoft.AspNetCore.App
+    dotnet add $testProjectPath package Microsoft.AspNetCore.Mvc.Testing
+
+    # Include the RootNamespace and optionally a custom .props file to the project
     UpdateRootNamespace $projectName $testProjectPath $customPropsFile
     
     # Execute post-creation actions
@@ -149,7 +165,6 @@ function UpdateRootNamespace($projectName, $testProjectPath, $customPropsFile = 
     foreach ($line in [System.IO.File]::ReadLines($testProjectPath)) {
         if ($i -eq 1) {
             if ($customPropsFile) {
-                # -and (Test-Path $customPropsFile)) {
                 Write-Verbose "Adding '$customPropsFile' to '$testProjectPath'."
                 Add-Content -Path $tmpFile -Value "  <Import Project=""$customPropsFile"" />"
                 Add-Content -Path $tmpFile -Value ""
