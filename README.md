@@ -4,7 +4,13 @@ Some useful scripts.
 
 ## dotnet-new/dual-projects.ps1
 
+<<<<<<< HEAD
 Allows you to create a project, using any template available with `dotnet new`, and it associated xunit test project.
+=======
+Allows you to create a project of any type (possible with `dotnet new`) and its associated test project (using `xunit`).
+Optionally, you can also create a functional tests project which automatically import `Microsoft.AspNetCore.App` and `Microsoft.AspNetCore.Mvc.Testing`.
+
+> > > > > > > Update README and fix DualProjects props options
 
 The project structure is as follow:
 
@@ -14,10 +20,12 @@ src
   {project name}
 test
   {project name}.Tests
+  (optional){project name}.FunctionalTests
 (optional){solution name}.sln
 ```
 
 ### How to install from source code
+
 From the source code directory, execute the following command:
 
 To install it locally, using the source:
@@ -31,6 +39,7 @@ Import-Module F:\Repos\ForEvolve.Scripts\dotnet-new\dual-projects\dual-projects.
 ```
 
 ### How to install from MyGet
+
 You can also use my published version, on MyGet, by executing the following commands:
 
 Register my NuGet feed as `ForEvolveFeed`:
@@ -64,20 +73,25 @@ You may need update your execution policy, with `Set-ExecutionPolicy`, to be abl
 Set-ExecutionPolicy Unrestricted
 ```
 
-*You need to run PowerShell in admin mode to execute that command.*
+_You need to run PowerShell in admin mode to execute that command._
 
-### Parameters
+### `Add-DualProjects` function
 
-| Parameter          | Alias         | Switch? | Required | Default Value | Description                                                                      |
-| ------------------ | ------------- | ------- | -------- | ------------- | -------------------------------------------------------------------------------- |
-| `-projectName`     | `-p`          | No      | Yes      |               | The name of the project that you want to create, for exmaple: `SomeCoolProject`. |
-| `-projectTemplate` | `-t`          | No      | No       | `web`         | The `dotnet new` template to use for the main project.                           |
-| `-createSolution`  | `-create-sln` | Yes     | No       | `$false`      | Specify if you want to create a solution.                                        |
-| `-solutionName`    | `-s`          | No      | No       |               | The name of the solution to create if it differs from the project name. You must include the `.sln` extension; example: `My.sln`.         |
-| `-mkdir`           |               | No      | No       | `$true`       | Specify if you want to make a new directoy for the solution.                     |
-| `-noBuild`         | `-no-build`   | Yes     | No       |               | If specified, `dotnet build` will not be run after the projects creation.        |
+#### Parameters
 
-### How to use
+| Parameter                         | Alias                     | Switch? | Required | Version | Default Value | Description                                                                                       |
+| --------------------------------- | ------------------------- | ------- | -------- | ------- | ------------- | ------------------------------------------------------------------------------------------------- |
+| `-projectName`                    | `-p`                      | No      | Yes      | 1.0.0   |               | The name of the project that you want to create, for exmaple: `SomeCoolProject`.                  |
+| `-projectTemplate`                | `-t`                      | No      | No       | 1.0.0   | `web`         | The `dotnet new` template to use for the main project.                                            |
+| `-createSolution`                 | `-create-sln`             | Yes     | No       | 1.0.0   | `$false`      | Specify if you want to create a solution.                                                         |
+| `-solutionName`                   | `-s`                      | No      | No       | 1.0.0   |               | The name of the solution to create if it differs from the project name.                           |
+| `-mkdir`                          |                           | No      | No       | 1.0.0   | `$true`       | Specify if you want to make a new directoy for the solution.                                      |
+| `-noBuild`                        | `-no-build`               | Yes     | No       | 1.0.0   |               | If specified, `dotnet build` will not run after the projects creation.                            |
+| `-addFunctionalTests`             | `-add-functional-tests`   | Yes     | No       | 1.1.0   |               | If specified, `Add-FunctionalTests` will be called to add a function tests project.               |
+| `-customTestsPropsFile`           | `-tests-props`            | No      | No       | 1.1.0   | `$null`       | Allow specifying a `.props` file that will be imported at the top of the unit test project.       |
+| `-customFunctionalTestsPropsFile` | `-functional-tests-props` | No      | No       | 1.1.0   | `$null`       | Allow specifying a `.props` file that will be imported at the top of the functional test project. |
+
+#### How to use
 
 How to create a project and a test project (named `SomeCoolProject`) in an existing solution:
 
@@ -115,7 +129,71 @@ To tell the script not to build the solution, you can specify `-noBuild` or `-no
 Add-DualProjects -p SomeCoolProject -t mvc -s some-solution.sln -mkdir $false -no-build -create-sln
 ```
 
+<<<<<<< HEAD
+
 ## Other info (notes to self)
+
+=======
+How to create a project named `SomeCoolProject`, a unit tests project, and a functional tests project in the default, existing, solution:
+
+```powershell
+Add-DualProjects -projectName SomeCoolProject -add-functional-tests
+```
+
+How to create a project named `SomeCoolProject`, a unit tests project, and a functional tests project in the default, existing, solution with each test project importing its own `props` file.
+This command also includes the `-no-build` flag which can become handy when `GenerateDocumentationFile` is set to `true` and `TreatWarningsAsErrors` is also set to `true` (in a `Directory.Build.props` file for example).
+
+```powershell
+Add-DualProjects -projectName SomeCoolProject -add-functional-tests -functional-tests-props ..\FunctionalTests.Build.props -customTestsPropsFile ..\UnitTests.Build.props -no-build
+```
+
+### `Add-FunctionalTests` function
+
+#### Parameters
+
+| Parameter          | Alias       | Switch? | Required | Version | Default Value | Description                                                                                                  |
+| ------------------ | ----------- | ------- | -------- | ------- | ------------- | ------------------------------------------------------------------------------------------------------------ |
+| `-projectName`     | `-p`        | No      | Yes      | 1.1.0   |               | The name of the project that you want to create, for exmaple: `SomeCoolProject`.                             |
+| `-solutionName`    | `-s`        | No      | No       | 1.1.0   |               | The name of the solution to add your functional tests project to if there is more than one in the directory. |
+| `-noBuild`         | `-no-build` | Yes     | No       | 1.1.0   |               | If specified, `dotnet build` will not run after the projects creation.                                       |
+| `-customPropsFile` | `-props`    | No      | No       | 1.1.0   | `$null`       | Allow specifying a `.props` file that will be imported at the top of the functional test project.            |
+
+#### How to use
+
+How to create a functional tests project for the project `SomeCoolProject`:
+
+```powershell
+Add-FunctionalTests -p SomeCoolProject
+```
+
+> This will create a xunit project into `test/SomeCoolProject.FunctionalTests` linked to `src/SomeCoolProject`.
+
+How to create a functional tests project for the project `SomeCoolProject` and include a `props` file located into `test/FunctionalTests.Build.props`:
+
+```powershell
+Add-FunctionalTests -p SomeCoolProject -props ..\FunctionalTests.Build.props
+```
+
+> This will add `<Import Project="..\FunctionalTests.Build.props" />` at the top of the project file ( under `<Project Sdk="Microsoft.NET.Sdk.Web">`).
+
+## Other info
+
+Use a custom MyGet feed:
+
+```
+Import-Module PowerShellGet
+$PSGalleryPublishUri = 'https://www.myget.org/F/forevolve/api/v2/package'
+$PSGallerySourceUri = 'https://www.myget.org/F/forevolve/api/v2'
+Register-PSRepository -Name MyGetFeed -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri
+```
+
+Install the module from that custom MyGet feed:
+
+```
+Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository MyGetFeed -Scope CurrentUser
+```
+
+> > > > > > > Update README and fix DualProjects props options
 
 Publish to that custom MyGet feed:
 
@@ -127,3 +205,15 @@ Publish-Module -Path dotnet-new -NuGetApiKey $APIKey -Repository ForEvolveFeed -
 Read feeds list: `Get-PSRepository`
 
 Create a module manifest: `New-ModuleManifest -Path dual-projects.psd1`
+
+# Release Notes
+
+## 1.1.0
+
+-   Add the `Add-FunctionalTests` function.
+-   Add functional tests options to the `Add-DualProjects` function (which now act more like "add three projects" than "add two projects").
+-   Unit tests and fucntional tests projects now adds the right `RootNamespace` in their `csproj` file.
+
+## 1.0.0
+
+-   Initial release of the `Add-DualProjects` function.

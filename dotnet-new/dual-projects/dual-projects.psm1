@@ -96,6 +96,8 @@ function Add-DualProjects {
     Write-Debug "mkdir: $mkdir"
     Write-Debug "noBuild: $noBuild"
     Write-Debug "addFunctionalTests: $addFunctionalTests"
+    Write-Debug "customTestsPropsFile: $customTestsPropsFile"
+    Write-Debug "customFunctionalTestsPropsFile: $customFunctionalTestsPropsFile"
     
     if ($createSolution) {
         Add-Solution $solutionName $mkdir $projectName
@@ -113,11 +115,11 @@ function Add-DualProjects {
     ReferenceSourceFromTest $srcProjectPath $testProjectPath
 
     # Update the RootNamespace to the test project
-    UpdateRootNamespace $projectName $testProjectPath
+    UpdateRootNamespace $projectName $testProjectPath $customTestsPropsFile
 
     # Create a functional test project
     if ($addFunctionalTests) {
-        Add-FunctionalTests $projectName $solutionName -no-build
+        Add-FunctionalTests $projectName $solutionName -no-build -props $customFunctionalTestsPropsFile
     }
 
     # Execute post-creation actions
