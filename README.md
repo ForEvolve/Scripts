@@ -20,8 +20,13 @@ test
 ### How to install from source code
 From the source code directory, execute the following command:
 
+To install it locally, using the source:
+
 ```
 Import-Module .\dotnet-new\dual-projects\dual-projects.psm1
+
+# Example from a local directory to test scripts changes, you can load the module with absolute path:
+# To unload the module, close the PowerShell console
 Import-Module F:\Repos\ForEvolve.Scripts\dotnet-new\dual-projects\dual-projects.psm1
 ```
 
