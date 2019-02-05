@@ -21,7 +21,8 @@ test
 From the source code directory, execute the following command:
 
 ```
-Import-Module .\dotnet-new\dual-projects.psm1
+Import-Module .\dotnet-new\dual-projects\dual-projects.psm1
+Import-Module F:\Repos\ForEvolve.Scripts\dotnet-new\dual-projects\dual-projects.psm1
 ```
 
 ### How to install from MyGet

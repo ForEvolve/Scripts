@@ -114,6 +114,54 @@ function Add-DualProjects {
     }
 }
 
+function Add-FunctionalTests {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)][Alias("p")][string]$projectName,
+        [Alias("s")][string]$solutionName = $null,
+        [Alias("no-build")][switch]$noBuild
+    )
+    Write-Debug "projectName: $projectName"
+    Write-Debug "solutionName: $solutionName"
+    Write-Debug "noBuild: $noBuild"
+
+    # Create the functional test project
+    Add-Project test "$projectName.FunctionalTests" xunit $solutionName
+    
+    # Add Reference to test project
+    $srcProjectPath = GetProjectPath src $projectName
+    $testProjectPath = GetProjectPath test "$projectName.FunctionalTests"
+    ReferenceSourceFromTest $srcProjectPath $testProjectPath
+
+    # Include FunctionalTests.Build.props to project (if it exists)
+    $functionalTestsBuildPropsFile = "test\FunctionalTests.Build.props"
+    if (Test-Path $functionalTestsBuildPropsFile) {
+        Write-Verbose "Adding '$functionalTestsBuildPropsFile' to '$testProjectPath'."
+        $tmpFile = "$testProjectPath.tmp"        
+        $i = 0;
+        foreach ($line in [System.IO.File]::ReadLines($testProjectPath)) {
+            if ($i -eq 1) {
+                Add-Content -Path $tmpFile -Value "  <Import Project=""..\FunctionalTests.Build.props"" />"
+            }
+            Add-Content -Path $tmpFile -Value $line
+            $i = $i + 1
+        }
+        # Delete csproj
+        Write-Verbose "Deleting '$testProjectPath'."
+        Remove-Item –path $testProjectPath
+
+        # Rename .tmp -> .csproj
+        Write-Verbose "Renaming '$tmpFile' to '$testProjectPath'."
+        Move-Item -Path $tmpFile -Destination $testProjectPath
+    }
+    
+    # Execute post-creation actions
+    if (!$noBuild) {
+        BuildSolution $solutionName
+    }
+}
+
+
 function BuildSolution($solutionName) {
     if ($solutionName) {
         Write-Verbose "Building solution using command: dotnet restore $solutionName"
@@ -141,4 +189,4 @@ function ReferenceSourceFromTest {
     dotnet add $testProjectPath reference $srcProjectPath
 }
 
-Export-ModuleMember -Function Add-DualProjects
+Export-ModuleMember -Function Add-DualProjects, Add-FunctionalTests
