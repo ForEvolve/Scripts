@@ -30,7 +30,7 @@ From the source code directory, execute the following command:
 
 To install it locally, using the source:
 
-```
+```powershell
 Import-Module .\dotnet-new\dual-projects\dual-projects.psm1
 
 # Example from a local directory to test scripts changes, you can load the module with absolute path:
@@ -189,15 +189,25 @@ Register-PSRepository -Name MyGetFeed -SourceLocation $PSGallerySourceUri -Publi
 
 Install the module from that custom MyGet feed:
 
-```
-Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository MyGetFeed -Scope CurrentUser
+```powershell
+# Only for the current user
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.0" -Repository MyGetFeed -Scope CurrentUser
+
+# For all users (required an elevated terminal)
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.0" -Repository MyGetFeed
+
+# Update the module (force is required to overrite the old version)
+Update-Module -Name "dual-projects" -RequiredVersion "1.1.0" -Force
+
+# List installed modules
+Get-InstalledModule -Name "dual-projects"
 ```
 
 > > > > > > > Update README and fix DualProjects props options
 
 Publish to that custom MyGet feed:
 
-```
+```powershell
 $APIKey = 'YOUR-API-KEY'
 Publish-Module -Path dotnet-new -NuGetApiKey $APIKey -Repository ForEvolveFeed -Verbose
 ```
