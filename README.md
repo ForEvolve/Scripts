@@ -35,40 +35,44 @@ Import-Module F:\Repos\ForEvolve.Scripts\dotnet-new\dual-projects\dual-projects.
 
 ### How to install from MyGet
 
-You can also use my published version, on MyGet, by executing the following commands:
+You can also use the published version, on MyGet, by executing the following commands:
 
-Register my NuGet feed as `ForEvolveFeed`:
+Register ForEvolve NuGet feed as `ForEvolveFeed`:
 
 ```powershell
 Import-Module PowerShellGet
 $PSGalleryPublishUri = 'https://www.myget.org/F/forevolve/api/v2/package'
 $PSGallerySourceUri = 'https://www.myget.org/F/forevolve/api/v2'
 Register-PSRepository -Name ForEvolveFeed -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri
+
+# If you trust my feed, you can run the following command to get rid of the anoying confirmation
+# You will need an elevated PowerShell terminal
+Set-PSRepository -Name "ForEvolveFeed" -InstallationPolicy Trusted
 ```
 
 Install the module from that custom MyGet feed:
 
 ```powershell
-# for all users/as admin
-Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository ForEvolveFeed
+# For all users (required an elevated terminal)
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository ForEvolveFeed
 
-# only for the current user
-Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository ForEvolveFeed -Scope CurrentUser
+# Only for the current user
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository ForEvolveFeed -Scope CurrentUser
 ```
 
-Finally, import the module:
+You may also have to import the module:
 
 ```powershell
-Import-Module dual-projects.psm1
+Import-Module dual-projects
 ```
 
-You may need update your execution policy, with `Set-ExecutionPolicy`, to be able to run PowerShell script file using the following command:
+You may need to update your execution policy, with `Set-ExecutionPolicy`, to be able to run PowerShell script file using the following command:
 
 ```powershell
 Set-ExecutionPolicy Unrestricted
 ```
 
-_You need to run PowerShell in admin mode to execute that command._
+> You need to run PowerShell in admin mode to execute that command.
 
 ### `Add-DualProjects` function
 
@@ -166,7 +170,7 @@ Add-FunctionalTests -p SomeCoolProject -props ..\FunctionalTests.Build.props
 
 > This will add `<Import Project="..\FunctionalTests.Build.props" />` at the top of the project file ( under `<Project Sdk="Microsoft.NET.Sdk.Web">`).
 
-## Other info
+## Other info (notes to self)
 
 Use a custom MyGet feed:
 
@@ -178,16 +182,19 @@ Register-PSRepository -Name ForEvolveFeed -SourceLocation $PSGallerySourceUri -P
 
 # To unregister a source
 Unregister-PSRepository -Name ForEvolveFeed
+
+# To trust the source
+Set-PSRepository -Name "ForEvolveFeed" -InstallationPolicy Trusted
 ```
 
 Install the module from that custom MyGet feed:
 
 ```powershell
 # Only for the current user
-Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository MyGetFeed -Scope CurrentUser
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository ForEvolveFeed -Scope CurrentUser
 
 # For all users (required an elevated terminal)
-Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository MyGetFeed
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository ForEvolveFeed
 
 # Update the module (force is required to overrite the old version)
 Update-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Force
@@ -198,8 +205,6 @@ Get-InstalledModule -Name "dual-projects"
 # Uninstall the module
 Uninstall-Module -Name "dual-projects" -AllVersions
 ```
-
-## Other info (notes to self)
 
 Publish to that custom MyGet feed:
 
@@ -214,6 +219,11 @@ Read feeds list: `Get-PSRepository`
 Create a module manifest: `New-ModuleManifest -Path dual-projects.psd1`
 
 # Release Notes
+
+## 1.1.2
+
+-   Update the module description.
+-   Specify `FunctionsToExport` at the module level.
 
 ## 1.1.1
 
