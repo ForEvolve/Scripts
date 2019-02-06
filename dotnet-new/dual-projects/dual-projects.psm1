@@ -161,17 +161,16 @@ function Add-FunctionalTests {
     }
 }
 
-function outputLocation { return (get-location)}
-
 function UpdateRootNamespace($projectName, $testProjectPath, $customPropsFile = $null) {
-    $loc = outputLocation
+    $loc = Get-Location
     Write-Debug "Location: $loc"
     Write-Debug "testProjectPath: $testProjectPath"
 
     # Convert to absolute path
     $fullTestPath = "$loc\$testProjectPath"
-    Write-Verbose "Convert '$fullTestPath' to absolute '$fullTestPath'."
+    Write-Verbose "Convert '$testProjectPath' to absolute '$fullTestPath'."
 
+    # Rewrite the csproj file
     $i = 0;
     $tmpFile = "$fullTestPath.tmp"        
     foreach ($line in [System.IO.File]::ReadLines($fullTestPath)) {

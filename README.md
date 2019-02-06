@@ -212,6 +212,10 @@ Create a module manifest: `New-ModuleManifest -Path dual-projects.psd1`
 
 # Release Notes
 
+## 1.1.1
+
+-   Fix: Convert the _csproj_ file path to absolute before reading it to make sure it works everytime.
+
 ## 1.1.0
 
 -   Add the `Add-FunctionalTests` function.
