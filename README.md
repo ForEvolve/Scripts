@@ -191,6 +191,9 @@ Update-Module -Name "dual-projects" -RequiredVersion "1.1.0" -Force
 
 # List installed modules
 Get-InstalledModule -Name "dual-projects"
+
+# Uninstall the module
+Uninstall-Module -Name "dual-projects" -AllVersions
 ```
 
 ## Other info (notes to self)

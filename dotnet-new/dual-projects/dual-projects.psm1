@@ -161,13 +161,23 @@ function Add-FunctionalTests {
     }
 }
 
+function outputLocation { return (get-location)}
+
 function UpdateRootNamespace($projectName, $testProjectPath, $customPropsFile = $null) {
+    $loc = outputLocation
+    Write-Debug "Location: $loc"
+    Write-Debug "testProjectPath: $testProjectPath"
+
+    # Convert to absolute path
+    $fullTestPath = "$loc\$testProjectPath"
+    Write-Verbose "Convert '$fullTestPath' to absolute '$fullTestPath'."
+
     $i = 0;
-    $tmpFile = "$testProjectPath.tmp"        
-    foreach ($line in [System.IO.File]::ReadLines($testProjectPath)) {
+    $tmpFile = "$fullTestPath.tmp"        
+    foreach ($line in [System.IO.File]::ReadLines($fullTestPath)) {
         if ($i -eq 1) {
             if ($customPropsFile) {
-                Write-Verbose "Adding '$customPropsFile' to '$testProjectPath'."
+                Write-Verbose "Adding '$customPropsFile' to '$fullTestPath'."
                 Add-Content -Path $tmpFile -Value "  <Import Project=""$customPropsFile"" />"
                 Add-Content -Path $tmpFile -Value ""
             }
@@ -183,12 +193,12 @@ function UpdateRootNamespace($projectName, $testProjectPath, $customPropsFile = 
     }
 
     # Delete original csproj
-    Write-Verbose "Deleting '$testProjectPath'."
-    Remove-Item –path $testProjectPath
+    Write-Verbose "Deleting '$fullTestPath'."
+    Remove-Item –path $fullTestPath
 
     # Rename .csproj.tmp to .csproj
-    Write-Verbose "Renaming '$tmpFile' to '$testProjectPath'."
-    Move-Item -Path $tmpFile -Destination $testProjectPath
+    Write-Verbose "Renaming '$tmpFile' to '$fullTestPath'."
+    Move-Item -Path $tmpFile -Destination $fullTestPath
 }
 function BuildSolution($solutionName) {
     if ($solutionName) {
