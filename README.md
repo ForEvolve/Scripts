@@ -174,20 +174,23 @@ Use a custom MyGet feed:
 Import-Module PowerShellGet
 $PSGalleryPublishUri = 'https://www.myget.org/F/forevolve/api/v2/package'
 $PSGallerySourceUri = 'https://www.myget.org/F/forevolve/api/v2'
-Register-PSRepository -Name MyGetFeed -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri
+Register-PSRepository -Name ForEvolveFeed -SourceLocation $PSGallerySourceUri -PublishLocation $PSGalleryPublishUri
+
+# To unregister a source
+Unregister-PSRepository -Name ForEvolveFeed
 ```
 
 Install the module from that custom MyGet feed:
 
 ```powershell
 # Only for the current user
-Install-Module -Name "dual-projects" -RequiredVersion "1.1.0" -Repository MyGetFeed -Scope CurrentUser
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository MyGetFeed -Scope CurrentUser
 
 # For all users (required an elevated terminal)
-Install-Module -Name "dual-projects" -RequiredVersion "1.1.0" -Repository MyGetFeed
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository MyGetFeed
 
 # Update the module (force is required to overrite the old version)
-Update-Module -Name "dual-projects" -RequiredVersion "1.1.0" -Force
+Update-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Force
 
 # List installed modules
 Get-InstalledModule -Name "dual-projects"
