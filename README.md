@@ -4,13 +4,8 @@ Some useful scripts.
 
 ## dotnet-new/dual-projects.ps1
 
-<<<<<<< HEAD
 Allows you to create a project, using any template available with `dotnet new`, and it associated xunit test project.
-=======
-Allows you to create a project of any type (possible with `dotnet new`) and its associated test project (using `xunit`).
 Optionally, you can also create a functional tests project which automatically import `Microsoft.AspNetCore.App` and `Microsoft.AspNetCore.Mvc.Testing`.
-
-> > > > > > > Update README and fix DualProjects props options
 
 The project structure is as follow:
 
@@ -44,7 +39,7 @@ You can also use my published version, on MyGet, by executing the following comm
 
 Register my NuGet feed as `ForEvolveFeed`:
 
-```
+```powershell
 Import-Module PowerShellGet
 $PSGalleryPublishUri = 'https://www.myget.org/F/forevolve/api/v2/package'
 $PSGallerySourceUri = 'https://www.myget.org/F/forevolve/api/v2'
@@ -53,7 +48,7 @@ Register-PSRepository -Name ForEvolveFeed -SourceLocation $PSGallerySourceUri -P
 
 Install the module from that custom MyGet feed:
 
-```
+```powershell
 # for all users/as admin
 Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository ForEvolveFeed
 
@@ -63,13 +58,13 @@ Install-Module -Name "dual-projects" -RequiredVersion "1.0.0" -Repository ForEvo
 
 Finally, import the module:
 
-```
+```powershell
 Import-Module dual-projects.psm1
 ```
 
 You may need update your execution policy, with `Set-ExecutionPolicy`, to be able to run PowerShell script file using the following command:
 
-```
+```powershell
 Set-ExecutionPolicy Unrestricted
 ```
 
@@ -129,11 +124,6 @@ To tell the script not to build the solution, you can specify `-noBuild` or `-no
 Add-DualProjects -p SomeCoolProject -t mvc -s some-solution.sln -mkdir $false -no-build -create-sln
 ```
 
-<<<<<<< HEAD
-
-## Other info (notes to self)
-
-=======
 How to create a project named `SomeCoolProject`, a unit tests project, and a functional tests project in the default, existing, solution:
 
 ```powershell
@@ -180,7 +170,7 @@ Add-FunctionalTests -p SomeCoolProject -props ..\FunctionalTests.Build.props
 
 Use a custom MyGet feed:
 
-```
+```powershell
 Import-Module PowerShellGet
 $PSGalleryPublishUri = 'https://www.myget.org/F/forevolve/api/v2/package'
 $PSGallerySourceUri = 'https://www.myget.org/F/forevolve/api/v2'
@@ -203,13 +193,14 @@ Update-Module -Name "dual-projects" -RequiredVersion "1.1.0" -Force
 Get-InstalledModule -Name "dual-projects"
 ```
 
-> > > > > > > Update README and fix DualProjects props options
+## Other info (notes to self)
 
 Publish to that custom MyGet feed:
 
 ```powershell
 $APIKey = 'YOUR-API-KEY'
-Publish-Module -Path dotnet-new -NuGetApiKey $APIKey -Repository ForEvolveFeed -Verbose
+cd dotnet-new
+Publish-Module -Path dual-projects -NuGetApiKey $APIKey -Repository ForEvolveFeed -Verbose
 ```
 
 Read feeds list: `Get-PSRepository`
