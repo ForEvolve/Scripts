@@ -54,10 +54,10 @@ Install the module from that custom MyGet feed:
 
 ```powershell
 # For all users (required an elevated terminal)
-Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository ForEvolveFeed
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.2" -Repository ForEvolveFeed
 
 # Only for the current user
-Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository ForEvolveFeed -Scope CurrentUser
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.2" -Repository ForEvolveFeed -Scope CurrentUser
 ```
 
 You may also have to import the module:
@@ -191,13 +191,13 @@ Install the module from that custom MyGet feed:
 
 ```powershell
 # Only for the current user
-Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository ForEvolveFeed -Scope CurrentUser
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.2" -Repository ForEvolveFeed -Scope CurrentUser
 
 # For all users (required an elevated terminal)
-Install-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Repository ForEvolveFeed
+Install-Module -Name "dual-projects" -RequiredVersion "1.1.2" -Repository ForEvolveFeed
 
 # Update the module (force is required to overrite the old version)
-Update-Module -Name "dual-projects" -RequiredVersion "1.1.1" -Force
+Update-Module -Name "dual-projects" -RequiredVersion "1.1.2" -Force
 
 # List installed modules
 Get-InstalledModule -Name "dual-projects"
